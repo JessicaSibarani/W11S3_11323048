@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rencana Harian</title>
+  <link rel="stylesheet" href="App.css">
+</head>
+<body>
+  <div id="root" class="App">
+    <h1>Rencana Harian</h1>
+    <form id="todo-form" class="todo-form">
+      <input
+        class="todo-input"
+        autoComplete="off"
+        type="text"
+        name="newTodo"
+        placeholder="Hm apa yang akan saya lakukan hari ini?"
+        value=""
+      >
+      <center><button type="submit" class="save-button">
+        SAVE
+      </button></center>
+    </form>
+    <div class="todo-content">
+      <ol>
+        <!-- TodoItems will be inserted here -->
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    // TodoItem component
+    function TodoItem({ text, index }) {
+      return `
+        <li>
+          ${text}
+          <button onclick="removeTodo(${index})">Remove</button>
+        </li>
+      `;
+    }
+
+    // App component
+    class App {
+      constructor() {
+        this.state = {
+          todos: [],
+          newTodo: ''
+        };
+        this.handleSubmit = this.handleSubmit.bind(this);
+      }
+
+      handleSubmit(e) {
+        e.preventDefault();
+        const todos = [...this.state.todos, this.state.newTodo];
+        this.setState({ todos, newTodo: '' });
+      }
+
+      handleRemove(index) {
+        const todos = [...this.state.todos];
+        todos.splice(index, 1);
+        this.setState({ todos });
+      }
+
+      render() {
+        const { newTodo } = this.state;
+        const todos = this.state.todos.map((todo, index) => TodoItem({ text: todo, index }));
+
+        document.getElementById('root').innerHTML = `
+          <h1>Rencana Harian</h1>
+          <form id="todo-form" class="todo-form">
+            <input
+              class="todo-input"
+              autoComplete="off"
+              type="text"
+              name="newTodo"
+              placeholder="Hm apa yang akan saya lakukan hari ini?"
+              value="${newTodo}"
+              onchange="this.setState({ newTodo: this.value })"
+            >
+            <center><button type="submit" class="save-button">
+              SAVE
+            </button></center>
+          </form>
+          <div class="todo-content">
+            <ol>
+              ${todos.join('')}
+            </ol>
+          </div>
+        `;
+
+        document.getElementById('todo-form').addEventListener('submit', this.handleSubmit);
+      }
+    }
+
+    const app = new App();
+    app.render();
+
+    function removeTodo(index) {
+      app.handleRemove(index);
+      app.render();
+    }
+  </script>
+</body>
+</html>
